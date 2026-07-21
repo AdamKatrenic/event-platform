@@ -25,8 +25,6 @@ public class Event {
 
     public Event() {}
 
-    // --- Getters and Setters ---
-
     public Long getId() {
         return id;
     }
