@@ -8,11 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/**
- * Centralised exception handling for every controller in the application.
- * Keeps controllers free of try/catch blocks - they just let exceptions
- * propagate, and this class decides how each one becomes an HTTP response.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -39,7 +34,6 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
     }
 
-    // Triggered automatically when @Valid fails on a @RequestBody DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
@@ -50,8 +44,6 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(message, HttpStatus.BAD_REQUEST.value()));
     }
 
-    // Safety net - anything not explicitly handled above becomes a 500,
-    // and we log the full stack trace instead of printing it to stdout.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception e) {
         log.error("Unexpected error", e);
