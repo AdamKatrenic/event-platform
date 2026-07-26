@@ -16,11 +16,10 @@ public class Event {
 
     private String description;
 
-    // Capacity is the maximum number of people who can attend this event
-    private Integer capacity; 
+    @Column(nullable = false)
+    private Integer capacity;
 
-    // Optional: Add a date/time field if an event has a fixed start time.
-    private LocalDateTime startTime; 
+    private LocalDateTime startTime;
 
 
     public Event() {}

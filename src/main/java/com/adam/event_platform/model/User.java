@@ -1,6 +1,7 @@
 package com.adam.event_platform.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,12 +16,14 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private String password; 
+    private String password;
 
     @Column(unique = true, nullable = false)
     private String email;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public User() {
     }
