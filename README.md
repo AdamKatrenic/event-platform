@@ -4,6 +4,6 @@ A simple demonstration of integrating **Spring Boot 3 (Java 21)** with **Apache 
 
 ---
 
-## 🛠️ Application Architecture
+## Application Architecture
 
 The application is built on the principle of loose coupling using the Publish-Subscribe pattern:
