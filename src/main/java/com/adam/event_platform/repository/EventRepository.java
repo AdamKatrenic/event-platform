@@ -2,7 +2,7 @@ package com.adam.event_platform.repository;
 
 import com.adam.event_platform.model.Event;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByTitleContainingIgnoreCase(String keyword);
 
-    List<Event> findByDateAfter(LocalDate date);
+    List<Event> findByStartTimeAfter(LocalDateTime dateTime);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT e FROM Event e WHERE e.id = :id")
