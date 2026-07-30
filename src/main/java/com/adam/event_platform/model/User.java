@@ -69,4 +69,17 @@ public class User {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private java.util.Set<String> roles = new java.util.HashSet<>();
+
+    public java.util.Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(java.util.Set<String> roles) {
+        this.roles = roles;
+    }
 }
