@@ -42,8 +42,8 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Event with ID " + request.eventId() + " not found."));
 
-        long currentBookings = bookingRepository.countConfirmedBookingsByEventId(request.eventId());
-        if (currentBookings >= event.getCapacity()) {
+        long currentActiveBookings = bookingRepository.countActiveBookingsByEventId(request.eventId());
+        if (currentActiveBookings >= event.getCapacity()) {
             throw new InsufficientCapacityException(
                     "Event '" + event.getTitle() + "' has reached its maximum capacity of " + event.getCapacity());
         }

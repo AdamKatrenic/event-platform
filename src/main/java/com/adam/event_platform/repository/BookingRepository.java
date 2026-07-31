@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query("SELECT COUNT(b) FROM Booking b WHERE b.event.id = :eventId AND b.status = 'CONFIRMED'")
-    long countConfirmedBookingsByEventId(@Param("eventId") Long eventId);
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.event.id = :eventId AND (b.status = 'CONFIRMED' OR b.status = 'PENDING')")
+    long countActiveBookingsByEventId(@Param("eventId") Long eventId);
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.event.id = :eventId")
     long countTotalBookingsByEventId(@Param("eventId") Long eventId);
