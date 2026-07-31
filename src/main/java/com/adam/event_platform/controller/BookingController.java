@@ -6,6 +6,7 @@ import com.adam.event_platform.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class BookingController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
     public ResponseEntity<List<BookingResponse>> getBookingsByUser(@PathVariable Long userId) {
         List<BookingResponse> bookings = bookingService.getBookingsByUser(userId);
         return ResponseEntity.ok(bookings); // Simplified syntax

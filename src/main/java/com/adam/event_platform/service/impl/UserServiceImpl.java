@@ -48,7 +48,8 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return new org.springframework.security.core.userdetails.User(
+        return new com.adam.event_platform.security.CustomUserDetails(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 user.getRoles().stream()
