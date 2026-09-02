@@ -23,13 +23,12 @@ public class BookingService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
-    private final KafkaTemplate<String, BookingEvent> kafkaTemplate;
+    // private final KafkaTemplate<String, BookingEvent> kafkaTemplate;
 
-    public BookingService(EventRepository eventRepository, UserRepository userRepository, BookingRepository bookingRepository, KafkaTemplate<String, BookingEvent> kafkaTemplate) {
+    public BookingService(EventRepository eventRepository, UserRepository userRepository, BookingRepository bookingRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
-        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Transactional
@@ -54,11 +53,16 @@ public class BookingService {
         newBooking.setStatus(BookingStatus.PENDING);
 
         Booking saved = bookingRepository.save(newBooking);
+        
+        // Kafka message sending is currently disabled for local development (no broker running)
+        /*
         kafkaTemplate.send("booking-events", new BookingEvent(
                 saved.getId(),
                 user.getId(),
                 event.getId()
         ));
+        */
+
         return toResponse(saved);
     }
 

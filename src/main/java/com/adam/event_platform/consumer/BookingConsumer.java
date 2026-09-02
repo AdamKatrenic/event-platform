@@ -16,6 +16,9 @@ public class BookingConsumer {
 
     private final BookingRepository bookingRepository;
 
+    /* 
+    // We have commented this out because Kafka is not running in the local environment.
+    // This prevents the application from looping on connection errors during startup.
     @KafkaListener(topics = "booking-events", groupId = "booking-group")
     public void consumeBookingEvent(BookingEvent event) {
         log.info("Received booking event for bookingId: {}", event.getBookingId());
@@ -31,4 +34,5 @@ public class BookingConsumer {
             }
         }, () -> log.error("Booking not found for ID: {}", event.getBookingId()));
     }
+    */
 }

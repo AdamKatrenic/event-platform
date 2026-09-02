@@ -35,17 +35,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String jwt = header.substring(7);
             try {
-                String username = jwtUtils.getUsernameFromToken(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String usernameFromToken = jwtUtils.getUsernameFromToken(jwt);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromToken);
 
-                if (userDetails != null && jwtUtils.isTokenValid(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("--- JWT DEBUG START ---");
+                System.out.println("1. Token Username: " + usernameFromToken);
+                if (userDetails != null) {
+                    System.out.println("2. DB User Found: " + userDetails.getUsername());
+                    System.out.println("3. DB Authorities: " + userDetails.getAuthorities());
+                    
+                    boolean isSameUser = usernameFromToken.equals(userDetails.getUsername());
+                    System.out.println("4. Username Match? " + isSameUser);
+
+                    // Check expiration manually for extra info
+                    try {
+                        java.util.Date expiration = jwtUtils.getClaimFromToken(jwt, io.jsonwebtoken.Claims::getExpiration);
+                        boolean isExpired = new java.util.Date().after(expiration);
+                        System.out.println("5. Token Expired? " + isExpired);
+                    } catch (Exception e) {
+                        System.out.println("5. Could not check expiration: " + e.getMessage());
+                    }
+
+                    if (userDetails != null && jwtUtils.isTokenValid(jwt, userDetails)) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        System.out.println("RESULT: Authentication SUCCESSFUL");
+                    } else {
+                        System.out.println("RESULT: Authentication FAILED (isTokenValid returned false)");
+                    }
+                } else {
+                    System.out.println("2. DB User Found? NO");
                 }
+                System.out.println("--- JWT DEBUG END ---");
+
             } catch (Exception e) {
                 log.error("Cannot set user authentication", e);
+                System.out.println("ERROR: Exception during token processing: " + e.getMessage());
             }
         }
 

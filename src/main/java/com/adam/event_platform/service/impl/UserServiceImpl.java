@@ -44,6 +44,14 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     }
 
     @Override
+    public void promoteToAdmin(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.getRoles().add("ROLE_ADMIN");
+        userRepository.save(user);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));

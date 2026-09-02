@@ -9,4 +9,5 @@ import org.springframework.stereotype.Service;
 
 public interface UserService extends UserDetailsService {
     User register(UserRegistrationRequest request);
+    void promoteToAdmin(Long userId);
 }
