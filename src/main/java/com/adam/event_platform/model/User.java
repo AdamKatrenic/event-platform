@@ -1,5 +1,6 @@
 package com.adam.event_platform.model;
 
+import com.adam.event_platform.security.Role;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
@@ -72,14 +73,15 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private java.util.Set<String> roles = new java.util.HashSet<>();
+    private java.util.Set<Role> roles = new java.util.HashSet<>();
 
-    public java.util.Set<String> getRoles() {
+    public java.util.Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(java.util.Set<String> roles) {
+    public void setRoles(java.util.Set<Role> roles) {
         this.roles = roles;
     }
 }

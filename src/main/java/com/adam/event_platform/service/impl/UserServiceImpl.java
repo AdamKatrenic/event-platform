@@ -4,6 +4,7 @@ import com.adam.event_platform.dto.UserRegistrationRequest;
 import com.adam.event_platform.exception.UserAlreadyExistsException;
 import com.adam.event_platform.model.User;
 import com.adam.event_platform.repository.UserRepository;
+import com.adam.event_platform.security.Role;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,8 +38,8 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setEmail(request.email());
-        // Default role: ROLE_USER
-        user.getRoles().add("ROLE_USER");
+        // Default role: every new account starts as a regular USER
+        user.getRoles().add(Role.USER);
 
         return userRepository.save(user);
     }
@@ -47,8 +48,13 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     public void promoteToAdmin(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        user.getRoles().add("ROLE_ADMIN");
+        user.getRoles().add(Role.ADMIN);
         userRepository.save(user);
+    }
+
+    @Override
+    public java.util.List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -61,7 +67,7 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
                 user.getUsername(),
                 user.getPassword(),
                 user.getRoles().stream()
-                        .map(SimpleGrantedAuthority::new)
+                        .map(role -> new SimpleGrantedAuthority(role.authority()))
                         .collect(Collectors.toList())
         );
     }
