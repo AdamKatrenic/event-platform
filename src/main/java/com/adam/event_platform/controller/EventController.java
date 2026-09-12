@@ -6,13 +6,11 @@ import com.adam.event_platform.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/events")
 public class EventController {
 
     private final EventService eventService;
@@ -21,26 +19,54 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping
+    /**
+     * GET all events - plural path for listing.
+     */
+    @GetMapping("/api/events")
     public ResponseEntity<List<Event>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getEventById(id));
+    /**
+     * GET by ID or title - tries ID first, falls back to title search.
+     */
+    @GetMapping("/api/events/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable String id) {
+        try {
+            Long longId = Long.parseLong(id);
+            Event event = eventService.getEventById(longId);
+            return ResponseEntity.ok(event);
+        } catch (NumberFormatException e) {
+            // If parsing fails, it might be a title - search by title
+            Event event = eventService.getEventByTitle(id);
+            return ResponseEntity.ok(event);
+        }
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * POST to create a new event - singular path for creation.
+     */
+    @PostMapping("/api/event")
     public ResponseEntity<Event> createEvent(@Valid @RequestBody EventRequest request) {
-        return new ResponseEntity<>(eventService.createEvent(request), HttpStatus.CREATED);
+        Event createdEvent = eventService.createEvent(request);
+        return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
-        return ResponseEntity.noContent().build();
+    /**
+     * PUT to update an event by title.
+     */
+    @PutMapping("/api/events/{title}")
+    public ResponseEntity<Event> updateEvent(@PathVariable String title, @Valid @RequestBody EventRequest request) {
+        Event updatedEvent = eventService.updateEvent(title, request);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    /**
+     * DELETE to remove an event by title.
+     */
+    @DeleteMapping("/api/events/{title}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable String title) {
+        eventService.deleteEvent(title);
+        return ResponseEntity.ok().build();  // Return 200 OK instead of 204
     }
 }

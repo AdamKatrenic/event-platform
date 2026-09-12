@@ -90,6 +90,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Kafka (compile-time only for tests, managed by parent BOM) -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
 		<!-- Swagger/OpenAPI -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

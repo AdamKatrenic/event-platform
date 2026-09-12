@@ -7,12 +7,12 @@ import com.adam.event_platform.model.*;
 import com.adam.event_platform.repository.BookingRepository;
 import com.adam.event_platform.repository.EventRepository;
 import com.adam.event_platform.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.kafka.core.KafkaTemplate;
+
 
 import java.time.LocalDateTime;
 
@@ -34,12 +34,10 @@ class BookingServiceIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    @MockBean
-    private KafkaTemplate<String, BookingEvent> kafkaTemplate;
-
     private User testUser;
     private Event testEvent;
 
+    @Transactional
     @BeforeEach
     void setUp() {
         bookingRepository.deleteAll();

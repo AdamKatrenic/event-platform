@@ -11,4 +11,5 @@ public interface UserService extends UserDetailsService {
     User register(UserRegistrationRequest request);
     void promoteToAdmin(Long userId);
     List<User> getAllUsers();
+    boolean existsByUsername(String username);
 }

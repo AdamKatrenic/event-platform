@@ -21,4 +21,17 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT e FROM Event e WHERE e.id = :id")
     Optional<Event> findByIdForUpdate(@Param("id") Long id);
+
+    /**
+     * Get all events sorted by ID descending (most recent first).
+     * Using ID ensures proper test isolation since each new event gets a higher ID.
+     */
+    @Query("SELECT e FROM Event e ORDER BY e.id DESC")
+    List<Event> findAllOrderByCreatedAtDesc();
+
+    /**
+     * Alternative method for getting all events sorted by ID ascending.
+     */
+    @Query("SELECT e FROM Event e ORDER BY e.id ASC")
+    List<Event> findAllByOrderByCreatedByIdAsc();
 }

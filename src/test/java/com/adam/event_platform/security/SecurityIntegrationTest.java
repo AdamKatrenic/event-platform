@@ -24,7 +24,8 @@ class SecurityIntegrationTest {
         UserRegistrationRequest registrationRequest = new UserRegistrationRequest(
                 "testuser",
                 "password123456",
-                "test@example.com"
+                "test@example.com",
+                false
         );
 
         ResponseEntity<String> registerResponse = restTemplate.postForEntity("/api/auth/register", registrationRequest, String.class);

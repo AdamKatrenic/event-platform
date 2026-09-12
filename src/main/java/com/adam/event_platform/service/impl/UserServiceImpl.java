@@ -1,6 +1,7 @@
 package com.adam.event_platform.service.impl;
 
 import com.adam.event_platform.dto.UserRegistrationRequest;
+import com.adam.event_platform.exception.ResourceNotFoundException;
 import com.adam.event_platform.exception.UserAlreadyExistsException;
 import com.adam.event_platform.model.User;
 import com.adam.event_platform.repository.UserRepository;
@@ -40,6 +41,10 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
         user.setEmail(request.email());
         // Default role: every new account starts as a regular USER
         user.getRoles().add(Role.USER);
+        // If admin flag is set, also assign ADMIN role
+        if (Boolean.TRUE.equals(request.isAdmin())) {
+            user.getRoles().add(Role.ADMIN);
+        }
 
         return userRepository.save(user);
     }
@@ -47,7 +52,7 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     @Override
     public void promoteToAdmin(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found"));
         user.getRoles().add(Role.ADMIN);
         userRepository.save(user);
     }
@@ -55,6 +60,11 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     @Override
     public java.util.List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.findByUsername(username).isPresent();
     }
 
     @Override

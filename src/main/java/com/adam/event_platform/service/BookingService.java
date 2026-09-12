@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class BookingService {
+public class  BookingService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;

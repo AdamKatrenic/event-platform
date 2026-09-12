@@ -21,6 +21,10 @@ public class Event {
 
     private LocalDateTime startTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
 
     public Event() {}
 
@@ -62,5 +66,13 @@ public class Event {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
