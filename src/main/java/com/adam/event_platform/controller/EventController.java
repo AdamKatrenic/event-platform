@@ -1,9 +1,10 @@
 package com.adam.event_platform.controller;
 
-import com.adam.event_platform.dto.EventRequest;
+import com.adam.event_platform.dto.CreateEventRequest;
 import com.adam.event_platform.model.Event;
 import com.adam.event_platform.service.EventService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,7 @@ public class EventController {
      * POST to create a new event - singular path for creation.
      */
     @PostMapping("/api/event")
-    public ResponseEntity<Event> createEvent(@Valid @RequestBody EventRequest request) {
+    public ResponseEntity<Event> createEvent(@Valid @RequestBody CreateEventRequest request) {
         Event createdEvent = eventService.createEvent(request);
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
@@ -56,7 +57,7 @@ public class EventController {
      * PUT to update an event by title.
      */
     @PutMapping("/api/events/{title}")
-    public ResponseEntity<Event> updateEvent(@PathVariable String title, @Valid @RequestBody EventRequest request) {
+    public ResponseEntity<Event> updateEvent(@PathVariable String title, @Valid @RequestBody CreateEventRequest request) {
         Event updatedEvent = eventService.updateEvent(title, request);
         return ResponseEntity.ok(updatedEvent);
     }

@@ -1,28 +1,60 @@
 # Event Platform - Spring Boot 3 Application
 
-A comprehensive event management platform built with **Spring Boot 3**, **Spring Security**, and **JWT authentication**. The application provides user management, event creation, booking capabilities, and administrative functions.
+A comprehensive event management platform built with **Spring Boot 3**, **Spring Security**, and **JWT authentication**. The application provides user management, event creation, booking capabilities, and administrative functions. It integrates with Apache Kafka for real-time event streaming and notification delivery.
+
+---
+
+## Shipped Projects
+
+| Project | Stack | Status |
+|---------|-------|--------|
+| Banking Platform | Java, Spring Boot, MySQL, JWT, Next.js, Docker | Live |
+| Event Platform | Java, Spring Boot, PostgreSQL, Kafka, JWT, Maven | Development |
+| Proofs — roofing company | Next.js, TypeScript, Tailwind, Sanity | Live |
+| David Pillar — event videographer | Next.js, TypeScript, Tailwind, Sanity | Live |
+
+---
+
+## Technology Stack
+
+**Backend**
+
+Java 21 · Spring Boot 3.2.5 · Spring Data JPA · PostgreSQL · MySQL · JWT · Apache Kafka · Docker · Maven · JUnit 5 · Mockito
+
+**Frontend**
+
+Next.js · TypeScript · Tailwind CSS · Sanity CMS · React · JavaScript · Chart.js · Framer Motion
+
+**Tools**
+
+Git · GitHub · Railway · Vercel · IntelliJ IDEA · VS Code · Postman · Docker · Local AI Models (LLMs)
 
 ---
 
 ## Features
 
 ### Authentication and Authorization
-- JWT-based token authentication
+- JWT-based token authentication using JsonWebTokens
 - Secure user login/logout functionality
 - Role-based access control (USER and ADMIN roles)
+- Spring Security with custom JwtAuthenticationFilter
 
 ### Event Management
 - Create, read, update, and delete events
 - Detailed event information retrieval
 - Search events by title
+- Kafka integration for real-time event publishing
 
 ### Booking System
 - Event booking functionality for users
 - Booking management and tracking
+- Capacity validation to prevent overbooking
+- Transaction-safe operations
 
 ### User Management  
 - User registration and login
 - Profile view capabilities
+- Admin user management endpoints
 
 ### Admin Dashboard
 - Administrative endpoints for platform management
@@ -31,14 +63,20 @@ A comprehensive event management platform built with **Spring Boot 3**, **Spring
 
 ---
 
-## Technology Stack
+## Kafka Integration
 
-- **Spring Boot 3.x** with Java 17/21
-- **Spring Security** with JWT authentication
-- **Hibernate/JPA** for database persistence
-- **HikariCP** connection pooling
-- **Lombok** for reduced boilerplate code
-- **JUnit 5** for testing
+The application uses Apache Kafka for decoupled microservices communication and real-time notification delivery. KafkaConfig provides a ProducerFactory bean for asynchronous event publishing.
+
+**Kafka Topics:**
+
+- **bookings**: Used for broadcasting booking events (confirmed, cancelled) to interested services or subscribers.
+
+**Implementation Details:**
+
+- Auto-configured via Spring Boot's @EnableKafka
+- Custom KafkaConfig with DefaultKafkaProducerFactory for explicit control
+- Asynchronous message sending using CompletableFuture
+- StringSerializer for both keys and values (JSON-based payload)
 
 ---
 
@@ -47,12 +85,17 @@ A comprehensive event management platform built with **Spring Boot 3**, **Spring
 ```
 src/main/java/com/adam/event_platform/
 ├── AppConfig.java              # Bean definitions and configuration
+├── config/                     # Kafka, Security configurations
+│   ├── KafkaConfig.java       # Kafka producer beans
+│   └── SecurityConfig.java    # Spring Security setup
 ├── controller/
 │   ├── AdminController.java    # Admin endpoints
 │   ├── AuthController.java     # Authentication endpoints
 │   └── UserController.java     # User management endpoints
+├── dto/                        # Data Transfer Objects
 ├── entity/                     # JPA entities (User, Event, Booking)
 ├── exception/                  # Custom exceptions and GlobalExceptionHandler
+├── model/                      # Domain models
 ├── repository/                 # JPA repositories
 ├── security/
 │   ├── JwtAuthenticationFilter.java
@@ -78,6 +121,7 @@ src/test/java/com/adam/event_platform/
 |--------|----------|-------------|------------------------|
 | POST | /api/auth/login | User login | No |
 | POST | /api/auth/logout | User logout | Yes |
+| POST | /api/auth/register | Register new user | No |
 
 ### Events
 
@@ -93,35 +137,47 @@ src/test/java/com/adam/event_platform/
 
 | Method | Endpoint | Description | Authentication Required |
 |--------|----------|-------------|------------------------|
-| GET | /api/user/{id} | Get user by ID | No |
+| GET | /api/v1/users/me | Get current user profile | Yes |
 | POST | /api/user | Register new user | No |
 
 ### Admin
 
 | Method | Endpoint | Description | Authentication Required |
 |--------|----------|-------------|------------------------|
-| All | /api/admin/** | Admin endpoints | Yes (ADMIN role) |
+| All | /api/v1/admin/** | Admin endpoints | Yes (ADMIN role) |
 
 ---
 
 ## Running the Application
 
 ### Prerequisites
-- Java 17 or higher
+- Java 21 or higher
 - Maven 3.6+
-- Database (H2 in-memory by default, or configure your own)
+- Database (H2 in-memory by default, or configure PostgreSQL/MySQL)
 
 ### Build and Run
 
 ```bash
-# Build the application
-mvn clean install
+# Build the application with tests
+mvn clean test
 
 # Run with Maven
 mvn spring-boot:run
 
 # Or use the jar file
-java -jar target/event-platform.jar
+java -jar target/event-platform-0.0.1-SNAPSHOT.jar
+```
+
+### Kafka Setup (Optional)
+
+To enable Kafka integration for event streaming:
+
+```bash
+# Start Kafka and ZooKeeper
+cd docker
+docker-compose up -d
+
+# The application will automatically connect to localhost:9092
 ```
 
 ### Test the API
@@ -145,7 +201,7 @@ curl -X POST http://localhost:8080/api/event \
 
 ## Configuration
 
-The application can be configured via `application.properties`:
+The application can be configured via `src/main/resources/application.properties`:
 
 ```properties
 # Server configuration
@@ -162,11 +218,10 @@ spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 spring.jpa.hibernate.ddl-auto=create-drop
 spring.jpa.show-sql=true
 
-# JWT Configuration
-jwt.secret=my-secret-key-for-jwt-signing-minimum-32-characters
-jwt.expiration=86400000
-
-# Security (configure as needed)
+# Kafka configuration (optional)
+spring.kafka.bootstrap-server=localhost:9092
+spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer
 ```
 
 ---
@@ -191,6 +246,24 @@ mvn test -Dtest=AdminControllerTest,AuthControllerTest,UserControllerTest
 | AuthControllerTest | 6 | Pass |
 | UserControllerTest | 3 | Pass |
 | **Total** | **16** | **All Passing** |
+
+---
+
+## Global Exception Handling
+
+The application uses a centralized `GlobalExceptionHandler` to handle common exceptions:
+
+- `ResourceNotFoundException` - 404 Not Found
+- `BadCredentialsException` - 401 Unauthorized
+- `MethodArgumentNotValidException` - 400 Bad Request
+- `AccessDeniedException` - 403 Forbidden
+- Custom business exceptions (InsufficientCapacityException, UserAlreadyExistsException, InvalidBookingStateException)
+
+---
+
+## Currently Learning
+
+Spring Kafka · Microservices · Angular · Kafka event streaming · Real-time notifications
 
 ---
 

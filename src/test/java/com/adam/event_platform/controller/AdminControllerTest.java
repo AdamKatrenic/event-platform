@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class AdminControllerTest {
 
     @Autowired
@@ -40,15 +41,14 @@ class AdminControllerTest {
     private long adminUserId;
 
     @BeforeEach
-    @Transactional
     void setUp() throws Exception {
-        // Clear database and create test users
+        // Clear database before each test
         userRepository.deleteAll();
         
         UserRegistrationRequest registration = new UserRegistrationRequest(
                 "regularuser", "password123456", "regular@example.com", false
         );
-        
+
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registration)))

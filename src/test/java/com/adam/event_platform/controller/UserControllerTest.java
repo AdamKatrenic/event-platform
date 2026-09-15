@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class UserControllerTest {
 
     @Autowired
@@ -33,15 +35,14 @@ class UserControllerTest {
     private String authToken;
 
     @BeforeEach
-    @Transactional
     void setUp() throws Exception {
-        // Clear database and register test user
+        // Clear database before each test
         userRepository.deleteAll();
         
         UserRegistrationRequest registration = new UserRegistrationRequest(
                 "testuser", "password123456", "test@example.com", false
         );
-        
+
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registration)))

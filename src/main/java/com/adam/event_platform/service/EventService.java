@@ -1,9 +1,10 @@
 package com.adam.event_platform.service;
 
-import com.adam.event_platform.dto.EventRequest;
+import com.adam.event_platform.dto.CreateEventRequest;
 import com.adam.event_platform.exception.ResourceNotFoundException;
 import com.adam.event_platform.model.Event;
 import com.adam.event_platform.repository.EventRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class EventService {
         return eventRepository.findAllOrderByCreatedAtDesc();
     }
 
-    public Event createEvent(EventRequest request) {
+    public Event createEvent(CreateEventRequest request) {
         Event event = new Event();
         event.setTitle(request.title());
         event.setDescription(request.description());
@@ -51,7 +52,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event updateEvent(String title, EventRequest request) {
+    public Event updateEvent(String title, CreateEventRequest request) {
         Event existingEvent = getEventByTitle(title);
         existingEvent.setTitle(request.title());
         existingEvent.setDescription(request.description());

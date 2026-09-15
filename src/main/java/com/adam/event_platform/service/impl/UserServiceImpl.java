@@ -6,6 +6,8 @@ import com.adam.event_platform.exception.UserAlreadyExistsException;
 import com.adam.event_platform.model.User;
 import com.adam.event_platform.repository.UserRepository;
 import com.adam.event_platform.security.Role;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     }
 
     @Override
+    @CacheEvict(value = "users", key = "'all'", allEntries = true)
     public User register(UserRegistrationRequest request) {
         if (userRepository.findByUsername(request.username()).isPresent()) {
             throw new UserAlreadyExistsException("Username already taken: " + request.username());
@@ -50,6 +53,7 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     }
 
     @Override
+    @CacheEvict(value = "users", key = "'all'", allEntries = true)
     public void promoteToAdmin(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found"));
@@ -58,11 +62,13 @@ public class UserServiceImpl implements com.adam.event_platform.service.UserServ
     }
 
     @Override
-    public java.util.List<User> getAllUsers() {
+    @Cacheable(value = "users", key = "'all'")
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
+    @Cacheable(value = "users", key = "#username")
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
     }

@@ -5,7 +5,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "bookings")
+@Table(name = "bookings", indexes = {
+    @Index(name = "idx_booking_event_id", columnList = "event_id"),
+    @Index(name = "idx_booking_user_id", columnList = "user_id"),
+    @Index(name = "idx_booking_status", columnList = "status")
+})
 public class Booking {
 
     @Id

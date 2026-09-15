@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .permitAll()
                         // Event endpoints are public
                         .requestMatchers("/api/event", "/api/events/**").permitAll()
-                        // Users endpoint: requires no authentication at filter level, controller handles auth check
+                        // Users endpoint is public - controller handles auth and returns 401 if unauthenticated
                         .requestMatchers("/api/v1/users/me").permitAll()
                         // Admin endpoints require authentication at filter level
                         .requestMatchers(HttpMethod.GET, "/api/v1/admin/users")

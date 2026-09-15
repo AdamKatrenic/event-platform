@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +26,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     /**
      * Get all events sorted by ID descending (most recent first).
-     * Using ID ensures proper test isolation since each new event gets a higher ID.
      */
     @Query("SELECT e FROM Event e ORDER BY e.id DESC")
     List<Event> findAllOrderByCreatedAtDesc();
@@ -34,4 +35,26 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      */
     @Query("SELECT e FROM Event e ORDER BY e.id ASC")
     List<Event> findAllByOrderByCreatedByIdAsc();
+
+    /**
+     * Paginated query for listing events.
+     */
+    Page<Event> findAll(Pageable pageable);
+    
+    /**
+     * Get paginated events sorted by ID descending (most recent first).
+     */
+    @Query("SELECT e FROM Event e ORDER BY e.id DESC")
+    Page<Event> findAllOrderByCreatedAtDesc(Pageable pageable);
+
+    /**
+     * Get paginated events sorted by ID ascending.
+     */
+    @Query("SELECT e FROM Event e ORDER BY e.id ASC")
+    Page<Event> findAllByOrderByCreatedByIdAsc(Pageable pageable);
+
+    /**
+     * Search paginated events by keyword in title.
+     */
+    Page<Event> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 }

@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class AuthControllerTest {
 
     @Autowired
@@ -35,15 +36,15 @@ class AuthControllerTest {
     private String authToken;
 
     @BeforeEach
-    @Transactional
     void setUp() throws Exception {
-        // Clear database and register test user
+        // Clear database before each test
         userRepository.deleteAll();
         
+        // Create a test user that will be used for login tests
         UserRegistrationRequest registration = new UserRegistrationRequest(
                 "testuser", "password123456", "test@example.com", false
         );
-        
+
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registration)))
@@ -55,7 +56,7 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(loginRequest)))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
-        
+
         authToken = objectMapper.readTree(token).get("token").asText();
     }
 

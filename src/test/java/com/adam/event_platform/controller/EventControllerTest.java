@@ -67,7 +67,7 @@ class EventControllerTest {
                 "Test Event",
                 "This is a test event description",
                 10,
-                LocalDate.now().plusDays(7)
+                LocalDateTime.now().plusDays(7)
         );
 
         mockMvc.perform(post("/api/event")
@@ -85,7 +85,7 @@ class EventControllerTest {
                 "Another Event",
                 "Another description",
                 5,
-                LocalDate.now().plusDays(3)
+                LocalDateTime.now().plusDays(3)
         );
 
         mockMvc.perform(post("/api/event")
@@ -106,7 +106,7 @@ class EventControllerTest {
                 "Specific Event",
                 "Event for testing retrieval",
                 20,
-                LocalDate.now().plusDays(5)
+                LocalDateTime.now().plusDays(5)
         );
 
         mockMvc.perform(post("/api/event")
@@ -127,7 +127,7 @@ class EventControllerTest {
                 "ToBeDeleted Event",
                 "This will be deleted",
                 15,
-                LocalDate.now().plusDays(10)
+                LocalDateTime.now().plusDays(10)
         );
 
         mockMvc.perform(post("/api/event")
@@ -147,7 +147,7 @@ class EventControllerTest {
                 "ToUpdate Event",
                 "Original description",
                 100,
-                LocalDate.now().plusDays(2)
+                LocalDateTime.now().plusDays(2)
         );
 
         mockMvc.perform(post("/api/event")
@@ -162,7 +162,7 @@ class EventControllerTest {
                 "Updated Title",
                 "Updated description",
                 50,
-                LocalDate.now().plusDays(1)
+                LocalDateTime.now().plusDays(1)
         );
 
         mockMvc.perform(put("/api/events/" + title)
