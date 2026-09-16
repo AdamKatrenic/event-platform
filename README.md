@@ -27,7 +27,7 @@ Next.js · TypeScript · Tailwind CSS · Sanity CMS · React · JavaScript · Ch
 
 **Tools**
 
-Git · GitHub · Railway · Vercel · IntelliJ IDEA · VS Code · Postman · Docker · Local AI Models (LLMs)
+Git · GitHub · Railway · Vercel · IntelliJ IDEA · VS Code · Postman · Docker · Local AI Models (LLMs) · Qwen3.5
 
 ---
 
